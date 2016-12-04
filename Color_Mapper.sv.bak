@@ -1,0 +1,99 @@
+module  color_mapper
+(
+		input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size_X, Ball_size_Y,
+		input  logic [2:0] Direction,
+		output logic [7:0]  Red, Green, Blue
+);
+    
+	 //information for the shape 
+	 logic shape_on;
+
+	 //instance for font sprite table
+	 logic [10:0] sprite_addr;
+	 logic [7:0] sprite_data;
+	 //font_rom (.addr(sprite_addr), .data(sprite_data));
+
+	 logic [255:0] start_page;
+	 Start_Page start(.addr(DrawY), .data(start_page));
+	 always_comb
+    begin:RGB_Display
+        if (start_page[DrawX] == 1'h1) 
+        begin 
+				//color for shape
+            Red = 8'hff; 
+            Green = 8'hff;
+            Blue = 8'h00;
+        end
+        else if (start_page[DrawX] == 1'ha) 
+        begin 
+				//color for background
+            Red = 8'hbd; 
+            Green = 8'h44;
+            Blue = 8'h00;
+        end   
+        begin 
+				//color for background
+            Red = 8'h00; 
+            Green = 8'h00;
+            Blue = 8'h00;
+        end    	  
+    end 
+/*	 
+	always_comb
+	begin:Shapes_on_proc
+		if(DrawX >= BallX && DrawX < BallX + Ball_size_X &&
+			DrawY >= BallY && DrawY < BallY + Ball_size_Y)
+		begin
+			if(Direction == 2'b00)
+			begin
+				shape_on = 1'b1;
+				sprite_addr = (DrawY-BallY + 16*'h7c);
+			end
+			else if(Direction == 2'b01)
+			begin
+				shape_on = 1'b1;
+				sprite_addr = (DrawY-BallY + 16*'h7d);
+			end
+			else if(Direction == 2'b10)
+			begin
+				shape_on = 1'b1;
+				sprite_addr = (DrawY-BallY + 16*'h7f);
+			end
+			else if(Direction == 2'b11)
+			begin
+				shape_on = 1'b1;
+				sprite_addr = (DrawY-BallY + 16*'h7e);
+			end
+			else
+			begin
+				shape_on = 1'b0;
+				sprite_addr = 11'b0;
+			end
+		end
+		else
+		begin
+			shape_on = 1'b0;
+			sprite_addr = 11'b0;
+		end
+	end
+	 
+	 
+    always_comb
+    begin:RGB_Display
+        if ((shape_on == 1'b1) && sprite_data[DrawX - BallX] == 1'b1) 
+        begin 
+				//color for shape
+            Red = 8'hff; 
+            Green = 8'hff;
+            Blue = 8'h00;
+        end
+        else 
+        begin 
+				//color for background
+            Red = 8'h00; 
+            Green = 8'h00;
+            Blue = 8'h00;
+        end    	  
+    end 
+*/
+endmodule

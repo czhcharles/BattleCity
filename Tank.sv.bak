@@ -1,0 +1,143 @@
+module Tank
+(
+		input 			Reset, frame_clk,
+		input  [15:0]	keycode,
+		output [9:0]	TankX, TankY, TankS_X, TankS_Y,
+		output [2:0]	Direction
+);
+
+	logic [9:0] Tank_X_Pos, Tank_X_Motion, Tank_Y_Pos, Tank_Y_Motion, Tank_Size_X, Tank_Size_Y;
+	logic [2:0] direction;
+
+	parameter [9:0] X_Min=0;
+	parameter [9:0] X_Max=639;
+	parameter [9:0] Y_Min=0;
+	parameter [9:0] Y_Max=479;
+	parameter [9:0] Tank_X_Start=320;
+	parameter [9:0] Tank_Y_Start=240;
+	parameter [9:0] Tank_X_Step=2;
+	parameter [9:0] Tank_Y_Step=2;
+
+	assign Tank_Size_X = 8;
+	assign Tank_Size_Y = 16;
+	
+	always_ff @ (posedge Reset or posedge frame_clk )
+	begin:
+		if (Reset)
+		begin
+			Tank_X_Motion <= 10'd0;
+			Tank_Y_Motion <= 10'd0;
+			Tank_X_Pos <= Tank_X_Start;
+			Tank_Y_Pos <= Tank_Y_Start;
+			direction <= 2'b00;
+		end
+
+		else 
+		begin
+			case (keycode[7:0])
+				8'h1a:	//W
+				begin
+						Tank_X_Motion <= 10'd0;
+						Tank_Y_Motion <= (~ (Tank_Y_Step) + 1'b1);
+						direction <= 2'b00;
+				end
+				8'h16:	//S
+				begin
+						Tank_X_Motion <= 10'd0;
+						Tank_Y_Motion <= Tank_Y_Step;
+						direction <= 2'b01;
+				end
+				8'h04:	//A
+				begin
+						Tank_X_Motion <= (~ (Tank_X_Step) + 1'b1);
+						Tank_Y_Motion <= 10'd0;
+						direction <= 2'b10;
+				end
+				8'h07:	//D
+				begin
+						Tank_X_Motion <= Tank_X_Step;
+						Tank_Y_Motion <= 10'd0;
+						direction <= 2'b11;
+				end
+				default:
+				begin
+						Tank_X_Motion <= 10'd0;
+						Tank_Y_Motion <= 10'd0;
+						direction <= direction;
+				end
+			endcase
+			case (keycode[15:8])
+				8'h1a:	//W
+				begin
+						Tank_X_Motion <= 10'd0;
+						Tank_Y_Motion <= (~ (Tank_Y_Step) + 1'b1);
+						direction <= 2'b00;
+				end
+				8'h16:	//S
+				begin
+						Tank_X_Motion <= 10'd0;
+						Tank_Y_Motion <= Tank_Y_Step;
+						direction <= 2'b01;
+				end
+				8'h04:	//A
+				begin
+						Tank_X_Motion <= (~ (Tank_X_Step) + 1'b1);
+						Tank_Y_Motion <= 10'd0;
+						direction <= 2'b10;
+				end
+				8'h07:	//D
+				begin
+						Tank_X_Motion <= Tank_X_Step;
+						Tank_Y_Motion <= 10'd0;
+						direction <= 2'b11;
+				end
+				default:
+				begin
+						Tank_X_Motion <= 10'd0;
+						Tank_Y_Motion <= 10'd0;
+						direction <= direction;
+				end
+			endcase
+
+			if ( ((Tank_Y_Pos + Tank_Size_Y) >= Tank_Y_Max) )
+			begin
+					Tank_X_Motion <= 10'd0;
+					Tank_Y_Motion <= 10'd0;
+					direction <= direction;
+			end
+			else if(((Tank_Y_Pos - Tank_Size_Y) <= Tank_Y_Min))
+			begin
+					Tank_X_Motion <= 10'd0;
+					Tank_Y_Motion <= 10'd0;
+					direction <= direction;
+			end
+			if ( ((Tank_X_Pos + Tank_Size_X) >= Tank_X_Max) )
+			begin
+					Tank_X_Motion <= 10'd0;
+					Tank_Y_Motion <= 10'd0;
+					direction <= direction;
+			end
+			else if(((Tank_X_Pos - Tank_Size_X) <= Tank_X_Min))
+			begin
+					Tank_X_Motion <= 10'd0;
+					Tank_Y_Motion <= 10'd0;
+					direction <= direction;
+			end
+
+			Tank_X_Pos <= (Tank_X_Pos + Tank_X_Motion);
+			Tank_Y_Pos <= (Tank_Y_Pos + Tank_Y_Motion);
+		end  
+	end
+
+    assign TankX = Tank_X_Pos;
+
+    assign TankY = Tank_Y_Pos;
+
+    assign TankS_X = Tank_Size_X;
+ 
+	 assign TankS_Y = Tank_Size_Y;
+
+	 assign Direction = direction;
+
+	 
+endmodule

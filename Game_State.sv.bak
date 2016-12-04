@@ -1,0 +1,35 @@
+module Game_State
+(
+		
+)
+
+	enum logic [6:0] {} state, next_state;
+	
+	AES aes(.*);
+	
+	logic [4:0] counter;
+	always_ff @ (posedge clk, negedge reset_n) 
+	begin
+		if (reset_n == 1'b0) 
+		begin
+			state <= WAIT;
+			counter <= 5'd0;
+		end 
+		else
+		begin
+			state <= next_state;
+			if (state == INVSUBBYTES_1 || state == INVSUBBYTES_2 || state == INVSUBBYTES_3 || state == INVSUBBYTES_4 || state == INVSUBBYTES_5 || state == INVSUBBYTES_6 || state == INVSUBBYTES_7 || state == INVSUBBYTES_8 || state == INVSUBBYTES_9 || state == INVSUBBYTES_END)
+				counter <= counter + 1'b1;
+			else
+				counter <= 5'd0;
+		end
+	end
+
+	always_comb
+	begin
+		next_state = state;
+		case (state)
+		begin
+		
+		end
+		
